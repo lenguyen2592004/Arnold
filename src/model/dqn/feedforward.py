@@ -83,7 +83,7 @@ class DQNFeedforward(DQN):
         )
 
         # dqn loss
-        loss_sc = self.loss_fn_sc(scores1, scores2.detach()).mean()
+        loss_sc = self.loss_fn_sc(scores1, Variable(scores2.data))
 
         # game features loss
         loss_gf = 0
@@ -91,7 +91,7 @@ class DQNFeedforward(DQN):
             loss_gf += self.loss_fn_gf(output_gf1, features[:, -2].float())
             loss_gf += self.loss_fn_gf(output_gf2, features[:, -1].float())
 
-        self.register_loss(loss_history, loss_sc, loss_gf)
+        self.register_loss(loss_history, loss_sc.item(), loss_gf.item())
 
         return loss_sc, loss_gf
 
