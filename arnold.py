@@ -6,17 +6,15 @@ from src.logger import get_logger
 from src.args import parse_game_args
 import inspect
 
-def my_function(arg1, *, arg2, arg3=None):
-    # Function implementation
+def my_function(arg1, *, arg2, arg3=None):  # Example function with keyword-only arguments and annotations
     pass
 
 # Get function signature (including keyword-only args and annotations)
 signature = inspect.signature(my_function)
 
-# Access information about the parameters (optional)
+# Access information about the parameters
 for param in signature.parameters.values():
-    print(param.name, param.kind, param.default)
-
+    print(param.name, param.kind, param.default)  # Output: arg1 POSITIONAL_OR_KEYWORD <class 'inspect._empty'>, arg2 KEYWORD_ONLY <class 'inspect._empty'>, arg3 KEYWORD_ONLY None
 
 parser = argparse.ArgumentParser(description='Arnold runner')
 parser.add_argument("--main_dump_path", type=str, default="./dumped",
