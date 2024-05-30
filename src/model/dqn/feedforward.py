@@ -1,3 +1,43 @@
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+from .base import DQNModuleBase, DQN
+
+
+class DQNModuleFeedforward(DQNModuleBase):
+
+    def __init__(self, params):
+        super(DQNModuleFeedforward, self).__init__(params)
+
+        self.feedforward = nn.Sequential(
+            nn.Linear(self.output_dim, params.hidden_dim),
+            nn.Sigmoid())
+
+    def forward(self, x_screens, x_variables):
+        """
+        Argument sizes:
+            - x_screens of shape (batch_size, seq_len * n_fm, h, w)
+            - x_variables list of n_var tensors of shape (batch_size,)
+        """
+
+        batch_size = x_screens.size(0)
+        assert x_screens.ndimension() == 4
+        assert len(x_variables) == self.n_variables
+        assert all(x.ndimension() == 1 and x.size(0) == batch_size
+                   for x in x_variables)
+
+        # state input (screen / depth / labels buffer + variables)
+        state_input, output_gf = self.base_forward(x_screens, x_variables)
+
+        # apply the feed forward middle
+        state_input = self.feedforward(state_input)
+
+        # apply the head to feed forward result
+        output_sc = self.head_forward(state_input)
+
+        return output_sc, output_gf
+
+
 class DQNFeedforward(DQN):
 
     DQNModuleClass = DQNModuleFeedforward
@@ -45,3 +85,9 @@ class DQNFeedforward(DQN):
         self.register_loss(loss_history, loss_sc.item(), loss_gf.item())
 
         return loss_sc, loss_gf
+
+
+    @staticmethod
+    def validate_params(params):
+        DQN.validate_params(params)
+        assert params.recurrence == ''
