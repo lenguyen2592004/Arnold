@@ -39,7 +39,17 @@ class DQNModuleFeedforward(DQNModuleBase):
 
 
 class DQNFeedforward(DQN):
-    # Các phương thức khác ...
+
+    DQNModuleClass = DQNModuleFeedforward
+
+    def f_eval(self, last_states):
+
+        screens, variables = self.prepare_f_eval_args(last_states)
+
+        return self.module(
+            screens.view(1, -1, *self.screen_shape[1:]),
+            [variables[-1, i] for i in range(self.params.n_variables)]
+        )
 
     def f_train(self, screens, variables, features, actions, rewards, isfinal,
                 loss_history=None):
@@ -84,8 +94,6 @@ class DQNFeedforward(DQN):
         self.register_loss(loss_history, loss_sc, loss_gf)
 
         return loss_sc, loss_gf
-
-
 
     @staticmethod
     def validate_params(params):
