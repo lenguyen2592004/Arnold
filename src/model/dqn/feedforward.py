@@ -39,8 +39,7 @@ class DQNModuleFeedforward(DQNModuleBase):
 
 
 class DQNFeedforward(DQN):
-
-    DQNModuleClass = DQNModuleFeedforward
+    # Các phương thức khác ...
 
     def f_train(self, screens, variables, features, actions, rewards, isfinal,
                 loss_history=None):
@@ -82,9 +81,10 @@ class DQNFeedforward(DQN):
             loss_gf += self.loss_fn_gf(output_gf1, features[:, -2].float())
             loss_gf += self.loss_fn_gf(output_gf2, features[:, -1].float())
 
-        self.register_loss(loss_history, loss_sc.item(), loss_gf.item())
+        self.register_loss(loss_history, loss_sc, loss_gf)
 
         return loss_sc, loss_gf
+
 
 
     @staticmethod
