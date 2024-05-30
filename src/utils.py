@@ -50,6 +50,10 @@ def bcast_json_list(param, length):
         return [obj] * length
 
 
+import re
+import torch.optim as optim
+import inspect
+
 def get_optimizer(s):
     """
     Parse optimizer parameters.
@@ -90,13 +94,15 @@ def get_optimizer(s):
         raise Exception('Unknown optimization method: "%s"' % method)
 
     # check that we give good parameters to the optimizer
-    expected_args = inspect.getargspec(optim_fn.__init__)[0]
+    signature = inspect.signature(optim_fn.__init__)
+    expected_args = list(signature.parameters.keys())
     assert expected_args[:2] == ['self', 'params']
     if not all(k in expected_args[2:] for k in optim_params.keys()):
         raise Exception('Unexpected parameters: expected "%s", received "%s"' %
                         (str(expected_args[2:]), str(optim_params.keys())))
 
     return optim_fn, optim_params
+
 
 
 def get_dump_path(main_dump_path, exp_name):
