@@ -4,6 +4,18 @@ import vizdoom
 from src.utils import get_dump_path
 from src.logger import get_logger
 from src.args import parse_game_args
+import inspect
+
+def my_function(arg1, *, arg2, arg3=None):
+    # Function implementation
+    pass
+
+# Get function signature (including keyword-only args and annotations)
+signature = inspect.signature(my_function)
+
+# Access information about the parameters (optional)
+for param in signature.parameters.values():
+    print(param.name, param.kind, param.default)
 
 
 parser = argparse.ArgumentParser(description='Arnold runner')
