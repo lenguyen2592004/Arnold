@@ -74,10 +74,10 @@ class DQNFeedforward(DQN):
         )
 
         # compute scores
-        mask = torch.ByteTensor(output_sc1.size()).fill_(0)
+        mask = torch.zeros_like(output_sc1, dtype=torch.bool)
         for i in range(batch_size):
             mask[i, int(actions[i, -1])] = 1
-        scores1 = output_sc1.masked_select(self.get_var(mask))
+        scores1 = output_sc1.masked_select(mask)
         scores2 = rewards[:, -1] + (
             self.params.gamma * output_sc2.max(1)[0] * (1 - isfinal[:, -1])
         )
